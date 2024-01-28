@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flask JSON Example</title>
+</head>
+<body>
+    <h1>Select an option:</h1>
+    <form id="dataForm">
+        <select id="options" name="selected_option">
+            {% for option in options %}
+                <option value="{{ option }}">{{ option }}</option>
+            {% endfor %}
+        </select>
+        <button type="button" onclick="getData()">Get Data</button>
+    </form>
+    <br>
+    <table id="dataTable" border="1">
+        <!-- Data will be inserted here dynamically -->
+    </table>
+
+    <script>
+        function getData() {
+            var selectedOption = document.getElementById('options').value;
+            var formData = new FormData(document.getElementById('dataForm'));
+
+            fetch('/get_data', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'  // Add this header for local development
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    displayData(data.data);
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function displayData(data) {
+            var table = document.getElementById('dataTable');
+            table.innerHTML = ''; // Clear existing table data
+
+            var header = table.createTHead();
+            var row = header.insertRow(0);
+
+            // Create header row
+          
+
+            // Populate table with data
+            for (var i = 0; i < data.length; i++) {
+                var row = table.insertRow(-1);
+                for (var key in data[i]) {
+                    var cell = row.insertCell();
+                    cell.innerHTML = data[i][key];
+                }
+            }
+        }
+    </script>
+</body>
+</html>
